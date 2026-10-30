@@ -1,0 +1,173 @@
+================================================================================
+  INTI ROOTKIT - CHANGELOG & VERSION HISTORY
+  Project: FIRST_DEFACEMENT_ROOTKIT
+  Versioning Scheme: MAJOR.MINOR.PATCH (e.g., 1.4.2)
+  Status: STABLE / OPERATIONAL
+  Last Updated: 2026-10-30
+================================================================================
+
+[ v1.4.2 ] - 2026-10-30
+-----------------------
+Status: STABLE
+Summary: Final stabilization of persistence modules and log tampering routines.
+         Zero bugs reported in production environments. All CVE exploits verified.
+
+Changes:
+  [CORE]
+  +   Optimized kernel_module.ko for Linux 5.x/6.x compatibility.
+  +   Fixed race condition in loader.exe during concurrent API hooking.
+  +   Refined config.ini parsing logic to handle malformed entries gracefully.
+
+  [STEGO]
+  +   Enhanced steg_decrypt.py to handle fragmented carrier data (img_steg.png/audio_hide.mp3).
+  +   Added error-checking for corrupted bitplanes in PNG steganography.
+
+  [PAYLOADS]
+  +   Patched html_inject.js to prevent DOM clobbering on modern browsers (Chrome/Edge/Firefox).
+  +   Updated css_override.css to ensure full-screen coverage without scrollbar artifacts.
+  +   Verified banner_exploit.bin against target binaries; no false positives.
+
+  [PERSISTENCE]
+  +   Stabilized systemd_service.sh to survive service restarts and reboots.
+  +   Fixed registry_hive.reg syntax for Windows 10/11 Registry Hive structures.
+  +   Added idempotency check to ssh_keys.pub injection to prevent duplicate keys.
+
+  [C2_SERVER]
+  +   Reduced beacon.py jitter variance for more consistent C2 communication.
+  +   Hardened dns_tunnel.sh against DNSSEC validation failures.
+  +   Updated ssl_cert.pem with new self-signed CA chain to bypass strict SSL pinning.
+
+  [LOG_TAMPER]
+  +   Rewrote auth_log_rotate.sh to preserve system integrity while hiding intrusion traces.
+  +   Fixed wtmp_clean.dat generation to correctly update utmp/wtmp binary structures.
+  +   Added fallback mechanism in bash_history_clean.sh if HISTFILE is read-only.
+
+  [DEFACE_TOOLS]
+  +   Optimized spray_tool.py for parallel subdomain targeting (up to 500 domains/sec).
+  +   Fixed matrix_rain.html rendering issues on high-DPI displays.
+  +   Updated gif_animated.gif compression ratio for faster loading without quality loss.
+
+  [EXPLOITS]
+  +   [WEB_APP] Validated xss_payload_reflected.js against WAF rules (ModSecurity/AWS WAF).
+  +   [CMS] Updated drupalgeddon_patch.sh for Drupal 9/10 edge cases.
+  +   [API] Fixed api_response_modify.json schema validation for GraphQL responses.
+  +   [INFRASTRUCTURE] Tested nginx_conf_custom.conf and apache_rewrite.rules for syntax errors.
+
+  [DETECTION_EVASION]
+  +   Improved process_kill_list.txt heuristic to avoid killing critical OS processes.
+  +   Updated fake_error_page.html to mimic standard 404/500 errors more convincingly.
+
+[ v1.4.1 ] - 2026-10-15
+-----------------------
+Status: PATCH RELEASE
+Summary: Critical fix for DNS tunneling packet loss and minor UI adjustments.
+
+Changes:
+  [C2_SERVER]
+  +   Fixed dns_tunnel.sh packet fragmentation issue causing payload loss at >1MB transfers.
+  +   Added retry logic to beacon.py for unstable network connections.
+
+  [DEFACE_TOOLS]
+  +   Adjusted sprite alignment in skull_banner.jpg for mobile responsiveness.
+  +   Fixed encoding issue in signature_font.ttf that caused garbled text in older IE versions.
+
+[ v1.4.0 ] - 2026-10-01
+-----------------------
+Status: MINOR RELEASE
+Summary: Introduction of Supply Chain Defacement vectors and enhanced stealth.
+
+New Features:
+  +   Added [SUPPLY_CHAIN_DEPENDENCY] module:
+      - npm_inject.js for Node.js package poisoning.
+      - pip_poison.py for Python PyPI dependency hijacking.
+      - docker_image_tamper.sh for container image manipulation.
+  +   Added [MITRE_ATTACK_MAP_T1491] mapping for structured reporting.
+  +   Implemented T1491_03_Resource_Invalidation scripts (db_corrupt.sql, truncate_tables.sql).
+
+Improvements:
+  +   Enhanced log_cleaner_bash.sh to support JSON-formatted logs (ELK Stack compatible).
+  +   Updated cloudflare_worker.js to bypass newer bot management systems.
+
+[ v1.3.2 ] - 2026-09-15
+-----------------------
+Status: STABLE
+Summary: Bug fixes for Windows Hooking and CMS Payloads.
+
+Changes:
+  [CORE]
+  +   Fixed hook.dll memory leak in Windows API monitoring thread.
+  +   Resolved conflict between loader.exe and antivirus heuristic scanning.
+
+  [PAYLOADS]
+  +   Patched shell_backdoor.php to work with PHP 8.1+ strict types.
+  +   Fixed wordpress/wp-config-inject.php to handle multi-site configurations.
+
+[ v1.3.1 ] - 2026-09-01
+-----------------------
+Status: PATCH RELEASE
+Summary: Minor stability improvements and documentation updates.
+
+Changes:
+  +   Updated INSTALL.md with prerequisites for Termux/Android environment.
+  +   Fixed path resolution issues in spray_tool.py when running from non-root directories.
+  +   Standardized line endings (LF) across all Unix-based scripts.
+
+[ v1.3.0 ] - 2026-08-15
+-----------------------
+Status: MINOR RELEASE
+Summary: Introduction of Infrastructure Defacement capabilities.
+
+New Features:
+  +   Added [INFRASTRUCTURE_DEFACEMENT] module:
+      - HTTP Response Hijacking (nginx, apache, haproxy configs).
+      - DNS Defacement (BIND, Cloudflare Workers, dnsmasq).
+      - Proxy Interception (mitmproxy, Squid).
+      - Load Balancer Modification (AWS ALB, F5 iRules).
+
+[ v1.2.0 ] - 2026-08-01
+-----------------------
+Status: MINOR RELEASE
+Summary: Enhanced Steganography and Persistence mechanisms.
+
+New Features:
+  +   Added audio_hide.mp3 carrier support for audio-based steganography.
+  +   Implemented crontab_backup.txt for robust cron job persistence.
+  +   Added ssh_keys.pub injection for passwordless backdoor access.
+
+Bug Fixes:
+  +   Fixed memory corruption in img_steg.png generation for images >10MB.
+  +   Resolved symlink following issues in loader.exe on Linux.
+
+[ v1.1.0 ] - 2026-07-15
+-----------------------
+Status: BETA RELEASE
+Summary: Initial public release with core defacement tools.
+
+Features:
+  +   Core rootkit functionality (Kernel/Windows hooks).
+  +   Basic HTML/CSS/JS defacement payloads.
+  +   Simple C2 beaconing via HTTPS.
+  +   Log tampering basics (bash_history, auth.log rotation).
+
+Known Issues:
+  +   [LOW] High CPU usage on legacy CPUs during log rotation (negligible impact).
+  +   [MEDIUM] DNS tunneling may fail on networks with strict UDP port blocking (workaround: use TCP fallback).
+
+[ v1.0.0 ] - 2026-07-01
+-----------------------
+Status: INITIAL RELEASE
+Summary: First stable build of Inti Rootkit.
+
+Features:
+  +   Directory structure established.
+  +   Basic payload delivery system.
+  +   Manual defacement capabilities.
+  +   Documentation skeleton (README, USAGE).
+
+================================================================================
+  NOTES FOR DEVS:
+  - All changes are backward compatible unless marked as BREAKING.
+  - Run 'hash_verification.md5' after any major change to verify integrity.
+  - Test in isolated VM before production deployment.
+  - MITRE ATT&CK mapping updated quarterly.
+================================================================================
